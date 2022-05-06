@@ -3,6 +3,7 @@ const colorDivs = document.querySelectorAll(".color");
 const generateBtn = document.querySelector(".generate");
 const sliders = document.querySelectorAll("input[type=range]");
 const currentHexes = document.querySelectorAll(".color h2");
+const popup = document.querySelector(".copy-container");
 
 //Event Listeners
 sliders.forEach(slider => {
@@ -15,19 +16,17 @@ colorDivs.forEach((slider,index) => {
     });
 });
 
+currentHexes.forEach(hex => {
+    hex.addEventListener("click", () => {
+        copyToClipboard(hex);
+    })
+})
 
-// Functions
-
-// Generating Hex Codes with plain Javascript
-
-// function generateHex() {
-//     const letters = "0123456789ABCDEF";
-//     let hash =  "#";
-//     for(let i = 0; i<6; i++) {
-//         hash+=letters[Math.floor(Math.random() * 16)];
-//     }
-//     return hash;
-// }
+popup.addEventListener("transitionend", () => {
+    const popupBox = popup.children[0];
+    popup.classList.remove("active");
+    popupBox.classList.remove("active");
+})
 
 // Generating Hex Codes using Chroma Js Libraary
 function generateHex() {
@@ -63,6 +62,8 @@ function randomColors() {
         colorizeSliders(color, hue, brightness, saturation); 
         // console.log(sliders);
     })
+
+    resetInputs();
 }
 
 function checkTextContrast(color,text) {
@@ -87,19 +88,19 @@ function colorizeSliders(color, hue, brightness, saturation) {
     // Updating Input Colors
     saturation.style.backgroundImage = `linear-gradient(to right,${scaleSat(0)},${scaleSat(1)})`;
     brightness.style.backgroundImage = `linear-gradient(to right,${scaleBright(0)},${scaleBright(1)}, ${scaleBright(2)})`;
-    hue.style.backgroundImage = `linear-gradient(to right, rgb(204,75,75), rgb(204,204,75), rgb(75,204,75), rgb(75,204,204), rgb(75,75,204),rgb(204,75,204),rgb(204,75,75))`
+    hue.style.backgroundImage = `linear-gradient(to right, rgb(204,75,75), rgb(204,204,75), rgb(75,204,75), rgb(75,204,204), rgb(75,75,204),rgb(204,75,204),rgb(204,75,75))`;
 }
 
 function hslControls(event) {
     const index = 
     event.target.getAttribute("data-hue")||
     event.target.getAttribute("data-bright")||
-    event.target.getAttribute("data-saturation")
+    event.target.getAttribute("data-saturation");
 
     let sliders = event.target.parentElement.querySelectorAll("input[type=range]");
-    const hue = sliders[0]
-    const brightness = sliders[1]
-    const saturation = sliders[2]
+    const hue = sliders[0];
+    const brightness = sliders[1];
+    const saturation = sliders[2];
 
     const bgColor = initialColors[index];
 
@@ -108,7 +109,8 @@ function hslControls(event) {
         .set("hsl.l", brightness.value)
         .set("hsl.h", hue.value);
 
-        colorDivs[index].style.backgroundColor = color;
+    colorDivs[index].style.backgroundColor = color;
+    colorizeSliders(color,hue,brightness,saturation);
 }
 
 function updateTextUI(index) {
@@ -122,6 +124,45 @@ function updateTextUI(index) {
     for (icon of icons) {
         checkTextContrast(color, icon);
     }
+}
+
+function resetInputs() {
+    const sliders = document.querySelectorAll(".sliders input");
+    sliders.forEach(slider => {
+        if(slider.name === "hue") {
+            const hueColor = initialColors[slider.getAttribute("data-hue")];
+            const hueValue = chroma(hueColor).hsl()[0];
+            slider.value = Math.floor(hueValue);
+        }
+
+        if(slider.name === "brightness") {
+            const brightnessColor = initialColors[slider.getAttribute("data-bright")];
+            const brightnessValue = chroma(brightnessColor).hsl()[2];
+            slider.value = Math.floor(brightnessValue * 100) / 100;
+        }
+
+        if(slider.name === "saturation") {
+            const saturationColor = initialColors[slider.getAttribute("data-saturation")];
+            const saturationValue = chroma(saturationColor).hsl()[1];
+            slider.value = Math.floor(saturationValue * 100) / 100;
+        }
+    })
+}
+
+function copyToClipboard(hex) {
+
+    // //Copying to Clipboard
+    const copyElement = document.createElement("textarea");
+    copyElement.value = hex.innerText;
+    document.body.appendChild(copyElement);
+    copyElement.select();
+    document.execCommand("copy");
+    document.body.removeChild(copyElement); 
+
+    // Pop up animation
+    const popupBox = popup.children[0];
+    popup.classList.add("active");
+    popupBox.classList.add("active");
 }
 
 randomColors();

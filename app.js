@@ -92,8 +92,7 @@ function randomColors() {
         const brightness = sliders[1];
         const saturation = sliders[2];
 
-        colorizeSliders(color, hue, brightness, saturation); 
-        // console.log(sliders);
+        colorizeSliders(color, hue, brightness, saturation);
     })
     //Reseting Inputs
     resetInputs();
@@ -278,8 +277,7 @@ function savepalette(event) {
     }
 
     const paletteObj = {name: name, colors: colors, nr: paletteNr};
-    savedPalettes.push(paletteObj);
-    console.log(savedPalettes); 
+    savedPalettes.push(paletteObj); 
 
     //Saving to Local Storage
     savetoLocal(paletteObj);

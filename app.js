@@ -225,8 +225,6 @@ function lockLayer(event, index) {
     }
 }
 
-randomColors();
-
 // Implement save to palette and localstorage
 const saveBtn = document.querySelector(".save");
 const submitSave = document.querySelector(".submit-save");
@@ -236,12 +234,17 @@ const saveInput = document.querySelector(".save-container input");
 const libraryContainer = document.querySelector(".library-container");
 const libraryBtn = document.querySelector(".library");
 const closeLibraryBtn = document.querySelector(".close-library");
+const deleteBtn = document.querySelector(".delete");
 
 saveBtn.addEventListener("click", openpalette);
 closeSave.addEventListener("click", closepalette);
 submitSave.addEventListener("click", savepalette);
 libraryBtn.addEventListener("click", openLibrary);
 closeLibraryBtn.addEventListener("click", closeLibrary);
+deleteBtn.addEventListener("click", () => {
+    localStorage.clear();
+    document.location.reload();
+});
 
 function openpalette(event){
     const popup = saveContainer.children[0];
@@ -266,7 +269,14 @@ function savepalette(event) {
     })
 
     // Generating Objects and saving to savePaletes Array
-    let paletteNr = savedPalettes.length;
+    let paletteNr;
+    const paletteObjects = JSON.parse(localStorage.getItem("palettes"));
+    if(paletteObjects) {
+        paletteNr = paletteObjects.length;
+    } else {
+        paletteNr = savedPalettes.length;
+    }
+
     const paletteObj = {name: name, colors: colors, nr: paletteNr};
     savedPalettes.push(paletteObj);
     console.log(savedPalettes); 
@@ -341,3 +351,61 @@ function closeLibrary() {
     libraryContainer.classList.remove("active");
     popup.classList.remove("active");
 }
+
+function getLocal() {
+    if (localStorage.getItem("palettes") === null) {
+        localPalettes = [];
+    } else {
+        const paletteObjects = JSON.parse(localStorage.getItem("palettes"));
+        savedPalettes = [...paletteObjects];
+
+        paletteObjects.forEach(paletteObj => {
+            // Generate the palette from the Saved palettes
+            const palette = document.createElement("div");
+            palette.classList.add("custom-palette");
+
+            const title = document.createElement("h4");
+            title.innerText = paletteObj.name;
+            
+            const preview = document.createElement("div");
+            preview.classList.add("small-preview"); 
+
+            paletteObj.colors.forEach(smallColor => {
+                const smallDiv = document.createElement("div");
+                smallDiv.style.backgroundColor = smallColor;
+                preview.appendChild(smallDiv);
+            });
+
+            const paletteBtn = document.createElement("button");
+            paletteBtn.classList.add("pick-palette-btn");
+            paletteBtn.classList.add(paletteObj.nr);
+            paletteBtn.innerText = "Select";
+
+            // Attach EventListener to the Select Btn
+            paletteBtn.addEventListener("click", event => {
+                closeLibrary();
+                const paletteIndex = event.target.classList[1];
+                initialColors = [];
+                paletteObjects[paletteIndex].colors.forEach((color, index) => {
+                    initialColors.push(color);
+                    colorDivs[index].style.backgroundColor = color;
+                    const text = colorDivs[index].children[0];
+                    checkTextContrast(color,text);
+                    updateTextUI(index);
+                });
+                resetInputs();
+            });
+
+            //Appending to Library
+            palette.appendChild(title);
+            palette.appendChild(preview);
+            palette.appendChild(paletteBtn);
+            libraryContainer.children[0].appendChild(palette);
+        })
+    }
+}
+
+getLocal();
+randomColors();
+
+// localStorage.clear();

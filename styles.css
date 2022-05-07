@@ -114,7 +114,8 @@ svg {
 
 .library-panel,
 .generate-panel,
-.save-panel {
+.save-panel, 
+.delete-panel {
     display: flex;
     flex-direction: column;
     align-items: center;

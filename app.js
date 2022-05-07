@@ -250,7 +250,6 @@ function openpalette(event){
 }
 
 function closepalette(event){
-    console.log(saveContainer);
     const popup = saveContainer.children[0];
     saveContainer.classList.remove("active"); 
     popup.classList.remove("active");
@@ -296,6 +295,21 @@ function savepalette(event) {
     paletteBtn.classList.add("pick-palette-btn");
     paletteBtn.classList.add(paletteObj.nr);
     paletteBtn.innerText = "Select";
+
+    // Attach EventListener to the Select Btn
+    paletteBtn.addEventListener("click", event => {
+        closeLibrary();
+        const paletteIndex = event.target.classList[1];
+        initialColors = [];
+        savedPalettes[paletteIndex].colors.forEach((color, index) => {
+            initialColors.push(color);
+            colorDivs[index].style.backgroundColor = color;
+            const text = colorDivs[index].children[0];
+            checkTextContrast(color,text);
+            updateTextUI(index);
+        });
+        resetInputs();
+    });
 
     //Appending to Library
     palette.appendChild(title);

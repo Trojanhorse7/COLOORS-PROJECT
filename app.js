@@ -8,6 +8,10 @@ const adjustButton = document.querySelectorAll(".adjust");
 const lockButton = document.querySelectorAll(".lock");
 const closedAdjustments = document.querySelectorAll(".close-adjustment");
 const sliderContainers = document.querySelectorAll(".sliders");
+let initialColors;
+
+//This is for local storage
+let savedPalettes = []; 
 
 //Event Listeners
 generateBtn.addEventListener("click", randomColors);
@@ -47,12 +51,10 @@ closedAdjustments.forEach((button,index) => {
 });
 
 lockButton.forEach((button, index) => {
-  button.addEventListener("click", event => {
-    lockLayer(event, index);
-  });
+    button.addEventListener("click", event => {
+        lockLayer(event, index);
+    });
 });
-
-
 
 // Generating Hex Codes using Chroma Js Libraary
 function generateHex() {
@@ -224,3 +226,104 @@ function lockLayer(event, index) {
 }
 
 randomColors();
+
+// Implement save to palette and localstorage
+const saveBtn = document.querySelector(".save");
+const submitSave = document.querySelector(".submit-save");
+const closeSave = document.querySelector(".close-save");
+const saveContainer = document.querySelector(".save-container");
+const saveInput = document.querySelector(".save-container input");
+const libraryContainer = document.querySelector(".library-container");
+const libraryBtn = document.querySelector(".library");
+const closeLibraryBtn = document.querySelector(".close-library");
+
+saveBtn.addEventListener("click", openpalette);
+closeSave.addEventListener("click", closepalette);
+submitSave.addEventListener("click", savepalette);
+libraryBtn.addEventListener("click", openLibrary);
+closeLibraryBtn.addEventListener("click", closeLibrary);
+
+function openpalette(event){
+    const popup = saveContainer.children[0];
+    saveContainer.classList.add("active"); 
+    popup.classList.add("active");
+}
+
+function closepalette(event){
+    console.log(saveContainer);
+    const popup = saveContainer.children[0];
+    saveContainer.classList.remove("active"); 
+    popup.classList.remove("active");
+}
+
+function savepalette(event) {
+
+    saveContainer.classList.remove("active");
+    popup.classList.remove("active");
+    const name = saveInput.value;
+    const colors = [];
+    currentHexes.forEach(hex => {
+        colors.push(hex.innerText);
+    })
+
+    // Generating Objects and saving to savePaletes Array
+    let paletteNr = savedPalettes.length;
+    const paletteObj = {name: name, colors: colors, nr: paletteNr};
+    savedPalettes.push(paletteObj);
+    console.log(savedPalettes); 
+
+    //Saving to Local Storage
+    savetoLocal(paletteObj);
+    saveInput.value = "";
+    
+    // Generate the palette from the Saved palettes
+    const palette = document.createElement("div");
+    palette.classList.add("custom-palette");
+
+    const title = document.createElement("h4");
+    title.innerText = paletteObj.name;
+    
+    const preview = document.createElement("div");
+    preview.classList.add("small-preview"); 
+
+    paletteObj.colors.forEach(smallColor => {
+        const smallDiv = document.createElement("div");
+        smallDiv.style.backgroundColor = smallColor;
+        preview.appendChild(smallDiv);
+    });
+
+    const paletteBtn = document.createElement("button");
+    paletteBtn.classList.add("pick-palette-btn");
+    paletteBtn.classList.add(paletteObj.nr);
+    paletteBtn.innerText = "Select";
+
+    //Appending to Library
+    palette.appendChild(title);
+    palette.appendChild(preview);
+    palette.appendChild(paletteBtn);
+    libraryContainer.children[0].appendChild(palette);
+}
+
+function savetoLocal(paletteObj) {
+    let localPalettes;
+
+    if (localStorage.getItem("palettes") === null) {
+        localPalettes = [];
+    } else {
+        localPalettes = JSON.parse(localStorage.getItem("palettes"));
+    }
+    localPalettes.push(paletteObj);
+    localStorage.setItem("palettes", JSON.stringify(localPalettes));
+}
+
+function openLibrary() {
+    const popup = libraryContainer.children[0];
+    libraryContainer.classList.add("active");
+    popup.classList.add("active");
+}
+
+function closeLibrary() {
+    const popup = libraryContainer.children[0];
+    libraryContainer.classList.remove("active");
+    popup.classList.remove("active");
+}

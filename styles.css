@@ -42,21 +42,15 @@ svg {
     flex-direction: column;
     font-weight: 600;
     justify-content: space-between;
-
     max-height: fit-content;
-
     position: absolute;
     bottom: 0%;
     background: rgb(168, 241, 84);
     color: rgb(0, 0, 0);
-    /* opacity: 0; */
     padding: 1rem;
-    width: 80%;
-    /* margin: 1rem; */
+    width: 95%;
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
-    /* pointer-events: none; */
-    /* Adding adjustment Class */
     transform: translateY(200px);
     translate: all 0.5s ease-in-out;
 }
@@ -253,9 +247,9 @@ input[type=range] {
     color: white;
 }
 
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 1000px) {
     .color {
-        width: 150px !important;
+        width: 200px !important;
         flex: none;
     }
 }

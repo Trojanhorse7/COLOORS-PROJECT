@@ -17,8 +17,10 @@ svg {
 .colors {
     min-height: 80vh;
     display: flex;
+    flex-direction: row;
     color: rgb(212, 212, 212);
-    
+    align-items: center;
+    overflow-x: auto;
 }
 
 .color {
@@ -34,7 +36,6 @@ svg {
     color: black;
     font-weight: 800;
 }
-
 
 .sliders {
     display: flex;
@@ -108,8 +109,6 @@ svg {
 
 .panel p {
     font-size: 1.2rem;
-    
-
 }
 
 .library-panel,
@@ -252,4 +251,11 @@ input[type=range] {
     cursor: pointer;
     background: black;
     color: white;
+}
+
+@media screen and (max-width: 750px) {
+    .color {
+        width: 150px !important;
+        flex: none;
+    }
 }
